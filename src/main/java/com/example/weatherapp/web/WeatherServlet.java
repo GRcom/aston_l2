@@ -1,7 +1,7 @@
 package com.example.weatherapp.web;
 
 import com.example.weatherapp.mapper.WeatherMapper;
-import com.example.weatherapp.model.Weather;
+import com.example.weatherapp.model.WeatherForAnyDaysAndHours;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
@@ -17,30 +17,21 @@ import java.net.URISyntaxException;
 public class WeatherServlet extends HttpServlet {
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init();
-
-
-    }
-
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.setContentType("text/html");
 
         String city = request.getParameter("city");
+        String hours = request.getParameter("hours");
         WeatherMapper weatherMapper = new WeatherMapper();
-        Weather weatherData;
+        WeatherForAnyDaysAndHours weatherForAnyDaysAndHours;
         try {
-            weatherData = weatherMapper.jsonStringToWeather(city);
+            weatherForAnyDaysAndHours = weatherMapper.jsonStringToWeather(city, hours);
         } catch (URISyntaxException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        request.setAttribute("weatherData", weatherData);
+        request.setAttribute("weatherDtoData", weatherForAnyDaysAndHours);
         RequestDispatcher dispatcher = request.getRequestDispatcher("weather.jsp");
         dispatcher.forward(request, response);
     }
 
-    @Override
-    public void destroy() {
-    }
 }

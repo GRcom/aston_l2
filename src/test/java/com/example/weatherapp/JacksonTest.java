@@ -1,11 +1,12 @@
 package com.example.weatherapp;
 
-import com.example.weatherapp.model.Weather;
+import com.example.weatherapp.mapper.WeatherMapper;
+import com.example.weatherapp.model.WeatherDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -32,10 +33,9 @@ class JacksonTest {
 
 
 
-        Weather weather = objectMapper.readValue(response.body(), Weather.class);
+        WeatherDto weatherDto = objectMapper.readValue(response.body(), WeatherDto.class);
 
-        System.out.println(weather.getLocation().getLocaltime());
-//        System.out.println(weather.getForecast().getForecastDay().get(2).getDay().getAvgTemperature());
+        System.out.println(weatherDto.getLocation().getLocaltime());
 
     }
 
