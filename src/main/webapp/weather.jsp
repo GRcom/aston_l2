@@ -1,8 +1,4 @@
-<%@ page import="com.example.weatherapp.model.Weather" %>
-<%@ page import="java.time.LocalDate" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Iterator" %>
+<%@ page import="com.example.weatherapp.model.WeatherForAnyDaysAndHours" %>
 <%--
   Created by IntelliJ IDEA.
   User: Alex
@@ -35,7 +31,7 @@
 <body>
 <section>
     <h3>Местоположение</h3>
-    <% Weather weather = (Weather) request.getAttribute("weatherData"); %>
+    <% WeatherForAnyDaysAndHours weatherForAnyDaysAndHours = (WeatherForAnyDaysAndHours) request.getAttribute("weatherDtoData"); %>
     <table>
         <tr>
             <th>Город</th>
@@ -43,29 +39,15 @@
             <th>Страна</th>
             <th>Местное время</th>
         </tr>
-        <%
 
-            String timeNow = weather.getLocation().getLocaltime();
-            String dateNow = weather.getLocation().getLocaltime();
-            if (timeNow == null || dateNow == null) {
-                timeNow = "10:00";
-                dateNow = "2023-10-12";
-            } else {
-                timeNow = timeNow.split(" ")[1];
-                dateNow = dateNow.split(" ")[0];
-            }
-            LocalDate parsedDate = LocalDate.parse(dateNow, DateTimeFormatter.ISO_LOCAL_DATE);
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-            String timeNowFormatted = timeNow + " " + dateFormatter.format(parsedDate);
-        %>
         <tr>
-            <td><%=weather.getLocation().getName()%>
+            <td><%=weatherForAnyDaysAndHours.getLocation().getName()%>
             </td>
-            <td><%=weather.getLocation().getRegion()%>
+            <td><%=weatherForAnyDaysAndHours.getLocation().getRegion()%>
             </td>
-            <td><%=weather.getLocation().getCountry()%>
+            <td><%=weatherForAnyDaysAndHours.getLocation().getCountry()%>
             </td>
-            <td><%=timeNowFormatted%>
+            <td><%=weatherForAnyDaysAndHours.getLocation().getLocaltime()%>
             </td>
         </tr>
     </table>
@@ -79,11 +61,11 @@
             <th>Давление</th>
         </tr>
         <tr>
-            <td><%=weather.getCurrent().getTemperature()%>°C</td>
-            <td><%=weather.getCurrent().getTemperatureFeelslike()%>°C</td>
-            <td><%=weather.getCurrent().getHumidity()%>%</td>
-            <td><%=weather.getCurrent().getWind()%>км/ч</td>
-            <td><%=weather.getCurrent().getPressure()%>мБ</td>
+            <td><%=weatherForAnyDaysAndHours.getCurrent().getTemperature()%>°C</td>
+            <td><%=weatherForAnyDaysAndHours.getCurrent().getTemperatureFeelslike()%>°C</td>
+            <td><%=weatherForAnyDaysAndHours.getCurrent().getHumidity()%>%</td>
+            <td><%=weatherForAnyDaysAndHours.getCurrent().getWind()%>км/ч</td>
+            <td><%=weatherForAnyDaysAndHours.getCurrent().getPressure()%>мБ</td>
         </tr>
     </table>
     <h3>Погода на ближайшие часы</h3>
@@ -97,104 +79,21 @@
             <th>Шанс снега</th>
             <th>На улице</th>
         </tr>
-        <%
-            int timeCase = Integer.parseInt(timeNow.split(":")[0]) + 1;
-            int[] hours = {0, 1, 2};
-            boolean isEndOfDay = false;
-            switch (timeCase) {
-                case 1:
-                    hours = new int[]{1, 2, 3};
-                    break;
-                case 2:
-                    hours = new int[]{2, 3, 4};
-                    break;
-                case 3:
-                    hours = new int[]{3, 4, 5};
-                    break;
-                case 4:
-                    hours = new int[]{4, 5, 6};
-                    break;
-                case 5:
-                    hours = new int[]{5, 6, 7};
-                    break;
-                case 6:
-                    hours = new int[]{6, 7, 8};
-                    break;
-                case 7:
-                    hours = new int[]{7, 8, 9};
-                    break;
-                case 8:
-                    hours = new int[]{8, 9, 10};
-                    break;
-                case 9:
-                    hours = new int[]{9, 10, 11};
-                    break;
-                case 10:
-                    hours = new int[]{10, 11, 12};
-                    break;
-                case 11:
-                    hours = new int[]{11, 12, 13};
-                    break;
-                case 12:
-                    hours = new int[]{12, 13, 14};
-                    break;
-                case 13:
-                    hours = new int[]{13, 14, 15};
-                    break;
-                case 14:
-                    hours = new int[]{14, 15, 16};
-                    break;
-                case 15:
-                    hours = new int[]{15, 16, 17};
-                    break;
-                case 16:
-                    hours = new int[]{16, 17, 18};
-                    break;
-                case 17:
-                    hours = new int[]{17, 18, 19};
-                    break;
-                case 18:
-                    hours = new int[]{18, 19, 20};
-                    break;
-                case 19:
-                    hours = new int[]{19, 20, 21};
-                    break;
-                case 20:
-                    hours = new int[]{20, 21, 22};
-                    break;
-                case 21:
-                    hours = new int[]{21, 22, 23};
-                    break;
-                case 22:
-                    hours = new int[]{22, 23};
-                    isEndOfDay = true;
-                    break;
-                case 23:
-                    hours = new int[]{23};
-                    isEndOfDay = true;
-                    break;
-                case 24:
-                    hours = new int[]{23};
-                    isEndOfDay = true;
-                    break;
-            }
-
-            for (int el : hours) {
+        <% for (int i = 0; i < weatherForAnyDaysAndHours.getHours().size(); i++) {
+            var hour = weatherForAnyDaysAndHours.getHours().get(i);
         %>
         <tr>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getTime().split(" ")[1]%>
+            <td><%=hour.getTime()%>
             </td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getTemperature()%>°C</td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getWind()%>км/ч</td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getHumidity()%>%</td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getChanceOfRain()%>%</td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getChanceOfSnow()%>%</td>
-            <td><%=weather.getForecast().getForecastDay().get(0).getHour().get(el).getCondition().getText()%>
+            <td><%=hour.getTemperature()%>°C</td>
+            <td><%=hour.getWind()%>км/ч</td>
+            <td><%=hour.getHumidity()%>%</td>
+            <td><%=hour.getChanceOfRain()%>%</td>
+            <td><%=hour.getChanceOfSnow()%>%</td>
+            <td><%=hour.getCondition().getText()%>
             </td>
         </tr>
-        <%
-            }
-        %>
+        <%}%>
     </table>
     <h3>Прогноз на три дня</h3>
     <table>
@@ -208,18 +107,16 @@
         </tr>
         <%
             for (int i = 0; i < 3; i++) {
-                var day = weather.getForecast().getForecastDay().get(i);
-                parsedDate = LocalDate.parse(day.getDate(), DateTimeFormatter.ISO_LOCAL_DATE);
-                String date = dateFormatter.format(parsedDate);
+                var day = weatherForAnyDaysAndHours.getDays().get(i);
         %>
         <tr>
-            <td><%=date%>
+            <td><%=day.getDate()%>
             </td>
-            <td><%=day.getDay().getAvgTemperature()%>°C</td>
-            <td><%=day.getDay().getMaxTemperature()%>°C</td>
-            <td><%=day.getDay().getMinTemperature()%>°C</td>
-            <td><%=day.getDay().getMaxWind()%>км/ч</td>
-            <td><%=day.getDay().getTotalPrecip()%>мм</td>
+            <td><%=day.getAvgTemperature()%>°C</td>
+            <td><%=day.getMaxTemperature()%>°C</td>
+            <td><%=day.getMinTemperature()%>°C</td>
+            <td><%=day.getMaxWind()%>км/ч</td>
+            <td><%=day.getTotalPrecip()%>мм</td>
         </tr>
         <%}%>
     </table>
